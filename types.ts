@@ -20,7 +20,15 @@ declare module 'knex/types/tables' {
         updated_at: Date;
     }
 
+    interface Account {
+      owner: number
+      account_number: number
+      balance: number
+      transaction_pin: string // so we can hash it
+    }
+
   interface Tables {
-    users: User
+    users: User,
+    accounts: Account,
     }
 }
