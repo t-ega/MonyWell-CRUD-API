@@ -5,12 +5,14 @@ import db from "../db/knex";
 import { validateUser } from "../validators/create-user.validator";
 import ErrorFactory from "../utils/error-factory.factory";
 import UserRepository from "../repositories/users.repository";
+import AccountRepository from "../repositories/account.repository";
 
 
 class UserController {
 
     constructor(
         private userRepository: UserRepository,
+        private accountReposity: AccountRepository
 
     ) {}
 
@@ -31,8 +33,8 @@ class UserController {
 
         const user = await this.userRepository.getUser(userId);
 
-
-        return res.json({user});
+        const account = await this.accountReposity.findByOwnerId(userId);
+        return res.json({user, account});
     }
 
 
@@ -77,9 +79,17 @@ class UserController {
             owner: user.id,
             transaction_pin: hashedPin
         };
+
+        // create an account for a user
+        const account = await this.accountReposity.create(trx, accountDto);
+        if(!account) {
+            throw new Error("An error occurred while creating the account");
+        }
+        
+        const accountNumber = account?.account_number;
         
  
-        return { id: user.id, ...userDto };
+        return { id: user.id, ...userDto, accountNumber };
         
     })
 
