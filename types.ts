@@ -1,4 +1,14 @@
 
+import { Knex } from "knex";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: number;
+    }
+  }
+}
+
 declare module 'knex/types/tables' {
     interface User {
         id: number;
