@@ -60,6 +60,20 @@ class UserRepository implements UserRepositoryInterface {
         const user = await trx("users").select().where({ email: userDto.email }).first();
         return user;
     }
+
+    async updateUser(userId: number, userDto: Partial<User>): Promise<User | undefined> {
+        const result = await db("users")
+        .update(userDto)
+        .where({ id: userId })
+        .returning("*")
+        .first();
+        return result;
+    }
+
+    async deleteUser(userId: number): Promise<number> {
+        const result = await db("users").delete().where({ id: userId });
+        return result;
+    }
 }
 
 export default UserRepository;

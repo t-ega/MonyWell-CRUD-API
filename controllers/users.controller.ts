@@ -85,7 +85,7 @@ class UserController {
         if(!account) {
             throw new Error("An error occurred while creating the account");
         }
-        
+
         const accountNumber = account?.account_number;
         
  
@@ -94,6 +94,37 @@ class UserController {
     })
 
     return res.json(result);
+    }
+
+    update = async (req: Request, res: Response) => {
+        const userId = req.userId as number;
+        const { error, value } = validateUser(req.body);
+
+        if (error) {
+            return res.status(400).json(ErrorFactory.getError(error.details[0].message));
+        }
+        const user = await this.userRepository.getUser(userId);
+
+        if (!user) {
+            return res.status(404).json(ErrorFactory.getError("User not found"));
+        }
+
+        const updatedUser = await this.userRepository.updateUser(userId, value);
+
+        return res.json(updatedUser);
+    }
+
+    delete = async (req: Request, res: Response) => {
+        const userId = req.userId as number;
+        const user = await this.userRepository.getUser(userId);
+
+        if (!user) {
+            return res.status(404).json(ErrorFactory.getError("User not found"));
+        }
+
+        const deletedUser = await this.userRepository.deleteUser(userId);
+
+        return res.json(deletedUser);   
     }
 
 }
